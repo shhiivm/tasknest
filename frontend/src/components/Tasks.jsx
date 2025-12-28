@@ -1,16 +1,57 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export const Tasks = () => {
+  const [addTask, setAddTask] = useState(false);
+  const [taskList, setTaskList] = useState([]);
+  const [task, setTask] = useState("");
+  const [taskTime, setTaskTime] = useState("");
+  const [taskDate, setTaskDate] = useState("");
+
+  const date = new Date();
+  function getDate() {
+    return (
+      date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear()
+    );
+  }
+  function getTime() {
+    return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+  }
+
+  const manageTaskList = () => {
+    if (task.trim() === "") return;
+    setTaskList((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        date: getDate(),
+        time: getTime(),
+        task: task,
+      },
+    ]);
+
+    setTask("");
+    // setTaskDate("");
+    // setTaskTime("");
+    setAddTask(false);
+  };
+
+  const handleDeleteTask = (id) => {
+    setTaskList((prev) => prev.filter((task) => task.id !== id));
+  };
+
   return (
     <div className="flex justify-center">
-      <div className="w-1/2 h-auto my-20 py-5">
+      <div className="w-full lg:w-1/2 h-auto m-4 py-5">
         <div>
           <h1 className="text-4xl font-bold text-center text-gray-600">
             TODO LIST
           </h1>
           <div className="flex justify-between px-4 py-4">
-            <button className="border bg-blue-600 text-amber-50 px-3 py-1 rounded font-medium">
-              Add Task
+            <button
+              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 border font-medium"
+              onClick={() => setAddTask(true)}
+            >
+              Create Task
             </button>
             <select
               className="bg-gray-300 border rounded px-2 py-1 font-medium"
@@ -21,28 +62,102 @@ export const Tasks = () => {
               <option value="ongoing">Ongoing</option>
             </select>
           </div>
-          <div className="border rounded px-4 bg-gray-200">
-            <div className="rounded p-2 my-4 bg-white flex justify-between">
+          <div className="border min-h-16 rounded px-4 bg-gray-200">
+            {/* <div className="rounded p-2 my-4 bg-white flex justify-between">
               <div className="flex justify-center">
                 <button className="border rounded bg-gray-300 p-3 my-2 mx-2">
                   {" "}
                 </button>
                 <div className="mx-2">
-                  <p>Create a react project</p>
+                  <p>Create react project</p>
                   <p>
                     <span>5:32 AM</span>, <span>01/06/2022</span>
                   </p>
                 </div>
               </div>
               <div>
-                <button className="bg-gray-200 border rounded p-2">Del</button>
-                <button className="bg-gray-200 border rounded p-2">Edit</button>
+                <button className="border rounded p-2 mx-2 bg-red-500 text-white font-medium">
+                  Del
+                </button>
+                <button className="bg-yellow-500  text-white font-medium border rounded p-2 mx-2">
+                  Edit
+                </button>
               </div>
-            </div>
-            <div className="rounded p-2 my-4 bg-white"> Task B</div>
-            <div className="rounded p-2 my-4 bg-white"> Task C</div>
+            </div> */}
+            {taskList.map((data) => (
+              <div
+                key={data.id}
+                className="rounded p-2 my-4 bg-white flex justify-between"
+              >
+                <div className="flex justify-center">
+                  <button className="border rounded bg-gray-300 p-3 my-2 mx-2">
+                    {" "}
+                  </button>
+                  <div className="mx-2">
+                    <p>
+                      {data.task} {data.id}
+                    </p>
+                    <p>
+                      <span>{data.time}</span>, <span>{data.date}</span>
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <button
+                    className="border rounded p-2 mx-2 bg-red-500 text-white font-medium"
+                    onClick={() => handleDeleteTask(data.id)}
+                  >
+                    Del
+                  </button>
+                  <button className="bg-yellow-500  text-white font-medium border rounded p-2 mx-2">
+                    Edit
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
+
+        {addTask && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+            <div className="bg-white rounded-lg p-6 w-80 shadow-lg">
+              <h2 className="text-lg font-semibold mb-4">Task Name</h2>
+              <input
+                type="text"
+                className="border p-2 text-lg font-semibold mb-4"
+                placeholder="Task heading"
+                value={task}
+                onChange={(e) => setTask(e.target.value)}
+              />
+              {/* <input
+                type="time"
+                className="border p-2"
+                value={taskTime}
+                onChange={(e) => setTaskTime(e.target.value)}
+              />
+              <input
+                type="date"
+                className="border p-2"
+                value={taskDate}
+                onChange={(e) => setTaskDate(e.target.value)}
+              /> */}
+              <div className="flex justify-end gap-2 pt-5">
+                <button
+                  className="font-medium px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                  onClick={() => setAddTask(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className=" font-medium px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  onClick={manageTaskList}
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
