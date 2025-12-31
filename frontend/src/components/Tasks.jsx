@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 export const Tasks = () => {
   const [addTask, setAddTask] = useState(false);
@@ -6,6 +7,20 @@ export const Tasks = () => {
   const [task, setTask] = useState("");
   const [taskTime, setTaskTime] = useState("");
   const [taskDate, setTaskDate] = useState("");
+
+  const fetchTask = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/v1/tasks");
+      if (response.data.success) {
+        setTaskList(response.data.message);
+      }
+    } catch (error) {
+      console.error("error in fetching api", error);
+    }
+  };
+  useEffect(() => {
+    fetchTask();
+  }, []);
 
   const date = new Date();
   function getDate() {
@@ -17,26 +32,41 @@ export const Tasks = () => {
     return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
   }
 
-  const manageTaskList = () => {
-    if (task.trim() === "") return;
-    setTaskList((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
+  const manageTaskList = async () => {
+    try {
+      if (task.trim() === "") return;
+      const response = await axios.post("http://localhost:5000/api/v1/tasks", {
+        title: task,
         date: getDate(),
         time: getTime(),
-        task: task,
-      },
-    ]);
+      });
+      if (response.data.success) {
+        setTaskList((prev) => [...prev, response.data.message]);
+        fetchTask();
+      }
 
-    setTask("");
-    // setTaskDate("");
-    // setTaskTime("");
-    setAddTask(false);
+      setTask("");
+      setTaskDate("");
+      setTaskTime("");
+      setAddTask(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleDeleteTask = (id) => {
-    setTaskList((prev) => prev.filter((task) => task.id !== id));
+  const handleDeleteTask = async (id) => {
+    try {
+      if (!id) return;
+      const response = await axios.delete(
+        `http://localhost:5000/api/v1/tasks/${id}`
+      );
+      if (response.data.success) {
+        setTaskList((prev) => prev.filter((task) => task._id !== id));
+        // fetchTask();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -86,7 +116,7 @@ export const Tasks = () => {
             </div> */}
             {taskList.map((data) => (
               <div
-                key={data.id}
+                key={data._id}
                 className="rounded p-2 my-4 bg-white flex justify-between"
               >
                 <div className="flex justify-center">
@@ -94,9 +124,7 @@ export const Tasks = () => {
                     {" "}
                   </button>
                   <div className="mx-2">
-                    <p>
-                      {data.task} {data.id}
-                    </p>
+                    <p>{data.title}</p>
                     <p>
                       <span>{data.time}</span>, <span>{data.date}</span>
                     </p>
@@ -105,7 +133,7 @@ export const Tasks = () => {
                 <div>
                   <button
                     className="border rounded p-2 mx-2 bg-red-500 text-white font-medium"
-                    onClick={() => handleDeleteTask(data.id)}
+                    onClick={() => handleDeleteTask(data._id)}
                   >
                     Del
                   </button>
