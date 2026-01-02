@@ -1,5 +1,6 @@
 const userModel = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const createUserController = async (req, res) => {
   try {
@@ -30,8 +31,12 @@ const createUserController = async (req, res) => {
       email,
       password: hashPassword,
     });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "7d",
+    });
     res.status(201).send({
       message: `${name} your account creation success`,
+      token,
       success: true,
     });
   } catch (error) {
@@ -63,9 +68,13 @@ const loginUserController = async (req, res) => {
         success: false,
       });
     }
-
+    const user = await userModel.findOne({ email });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "7d",
+    });
     res.status(200).send({
-      message: "Login success!",
+      message: `Login success! Welcome back ${user.name}`,
+      token,
       success: true,
     });
   } catch (error) {

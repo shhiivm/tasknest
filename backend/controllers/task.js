@@ -41,12 +41,11 @@ const deleteTaskModel = async (req, res) => {
     const { id } = req.params;
     const getTask = await taskModel.findByIdAndDelete(id);
     if (!getTask) {
-      return res.send(404).send({
+      return res.status(404).send({
         message: "Can't find task",
         success: false,
       });
     }
-
     res.status(200).send({
       message: "Task deleted successfully",
       success: true,
@@ -59,4 +58,34 @@ const deleteTaskModel = async (req, res) => {
     });
   }
 };
-module.exports = { createTaskModel, displayTaskModel, deleteTaskModel };
+
+const updateTaskModel = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const title = req.body;
+    const getTask = await taskModel.findByIdAndUpdate(id, title);
+    if (!getTask) {
+      return res.status(404).send({
+        message: "Cannot find task",
+        success: false,
+      });
+    }
+    res.status(200).send({
+      message: "Task updated sucessfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error in fetching api", error);
+    res.status(501).send({
+      message: "Cannot find task to delete",
+      success: false,
+      error,
+    });
+  }
+};
+module.exports = {
+  createTaskModel,
+  displayTaskModel,
+  deleteTaskModel,
+  updateTaskModel,
+};
