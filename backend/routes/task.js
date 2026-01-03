@@ -9,7 +9,7 @@ const {
 } = require("../controllers/task");
 
 router.post("/tasks", createTaskModel);
-router.get("/tasks", authMiddleware, displayTaskModel);
+router.get("/tasks", displayTaskModel);
 router.delete("/tasks/:id", deleteTaskModel);
 router.put("/tasks/:id", updateTaskModel);
 

@@ -26,7 +26,7 @@ const createUserController = async (req, res) => {
       });
     }
     const hashPassword = await bcrypt.hash(password, 10);
-    const user = userModel.create({
+    const user = await userModel.create({
       name,
       email,
       password: hashPassword,
@@ -35,12 +35,16 @@ const createUserController = async (req, res) => {
       expiresIn: "7d",
     });
     res.status(201).send({
-      message: `${name} your account creation success`,
+      message: `${name} your account has been successfully created.`,
       token,
       success: true,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
   }
 };
 
@@ -86,4 +90,16 @@ const loginUserController = async (req, res) => {
   }
 };
 
-module.exports = { createUserController, loginUserController };
+const logoutController = (req, res) => {
+  res.clearCookie("token");
+  res.json({
+    message: "Logged out successfully",
+    success: true,
+  });
+};
+
+module.exports = {
+  createUserController,
+  loginUserController,
+  logoutController,
+};
