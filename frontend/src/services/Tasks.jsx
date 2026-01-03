@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Input } from "../components/common/Input";
 
 export const Tasks = () => {
   const [addTask, setAddTask] = useState(false);
@@ -93,27 +94,6 @@ export const Tasks = () => {
             </select>
           </div>
           <div className="border min-h-16 rounded px-4 bg-gray-200">
-            {/* <div className="rounded p-2 my-4 bg-white flex justify-between">
-              <div className="flex justify-center">
-                <button className="border rounded bg-gray-300 p-3 my-2 mx-2">
-                  {" "}
-                </button>
-                <div className="mx-2">
-                  <p>Create react project</p>
-                  <p>
-                    <span>5:32 AM</span>, <span>01/06/2022</span>
-                  </p>
-                </div>
-              </div>
-              <div>
-                <button className="border rounded p-2 mx-2 bg-red-500 text-white font-medium">
-                  Del
-                </button>
-                <button className="bg-yellow-500  text-white font-medium border rounded p-2 mx-2">
-                  Edit
-                </button>
-              </div>
-            </div> */}
             {taskList.map((data) => (
               <div
                 key={data._id}
@@ -123,6 +103,7 @@ export const Tasks = () => {
                   <button className="border rounded bg-gray-300 p-3 my-2 mx-2">
                     {" "}
                   </button>
+
                   <div className="mx-2">
                     <p>{data.title}</p>
                     <p>
@@ -157,18 +138,7 @@ export const Tasks = () => {
                 value={task}
                 onChange={(e) => setTask(e.target.value)}
               />
-              {/* <input
-                type="time"
-                className="border p-2"
-                value={taskTime}
-                onChange={(e) => setTaskTime(e.target.value)}
-              />
-              <input
-                type="date"
-                className="border p-2"
-                value={taskDate}
-                onChange={(e) => setTaskDate(e.target.value)}
-              /> */}
+
               <div className="flex justify-end gap-2 pt-5">
                 <button
                   className="font-medium px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
