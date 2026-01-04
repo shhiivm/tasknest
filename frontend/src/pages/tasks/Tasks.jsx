@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Input } from "../components/common/Input";
+import api from "../../api";
+import { Input } from "../../components/common/Input";
 
 export const Tasks = () => {
   const [addTask, setAddTask] = useState(false);
@@ -11,7 +11,7 @@ export const Tasks = () => {
 
   const fetchTask = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/v1/tasks");
+      const response = await api.get("/api/v1/tasks");
       if (response.data.success) {
         setTaskList(response.data.message);
       }
@@ -36,14 +36,14 @@ export const Tasks = () => {
   const manageTaskList = async () => {
     try {
       if (task.trim() === "") return;
-      const response = await axios.post("http://localhost:5000/api/v1/tasks", {
+      const response = await api.post("/api/v1/tasks", {
         title: task,
         date: getDate(),
         time: getTime(),
       });
       if (response.data.success) {
-        setTaskList((prev) => [...prev, response.data.message]);
-        fetchTask();
+        // server does not return created task object consistently — refresh list
+        await fetchTask();
       }
 
       setTask("");
@@ -58,9 +58,7 @@ export const Tasks = () => {
   const handleDeleteTask = async (id) => {
     try {
       if (!id) return;
-      const response = await axios.delete(
-        `http://localhost:5000/api/v1/tasks/${id}`
-      );
+      const response = await api.delete(`/api/v1/tasks/${id}`);
       if (response.data.success) {
         setTaskList((prev) => prev.filter((task) => task._id !== id));
         // fetchTask();
