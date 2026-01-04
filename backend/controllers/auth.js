@@ -34,11 +34,17 @@ const createUserController = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "7d",
     });
+    res.cookie("token", token, {
+      httpOnly: true,
+      // secure: true, // enable in production when using HTTPS
+      sameSite: "lax",
+    });
     res.status(201).send({
       message: `${name} your account has been successfully created.`,
       token,
       success: true,
     });
+    await user.save();
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -75,6 +81,11 @@ const loginUserController = async (req, res) => {
     const user = await userModel.findOne({ email });
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "7d",
+    });
+    res.cookie("token", token, {
+      httpOnly: true,
+      // secure: true, // enable in production when using HTTPS
+      sameSite: "lax",
     });
     res.status(200).send({
       message: `Login success! Welcome back ${user.name}`,

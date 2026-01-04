@@ -7,11 +7,13 @@ const createTaskModel = async (req, res) => {
       title,
       date,
       time,
+      user: req.user.id,
     });
     res.status(200).send({
       message: "Task added sucessfully",
       success: true,
     });
+    await createTask.save();
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -23,7 +25,7 @@ const createTaskModel = async (req, res) => {
 
 const displayTaskModel = async (req, res) => {
   try {
-    const taskLists = await taskModel.find({});
+    const taskLists = await taskModel.find({ user: req.user.id });
     res.status(200).send({
       message: taskLists,
       success: true,

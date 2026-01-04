@@ -2,14 +2,22 @@ const jwt = require("jsonwebtoken");
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const authToken = req.headers["authorization"];
-    if (!authToken || !authToken.startsWith("Bearer ")) {
+    const authHeader = req.headers["authorization"];
+    let token = null;
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    } else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
+
+    if (!token) {
       return res.status(401).send({
         message: "Authorization header missing or malformed",
         success: false,
       });
     }
-    const token = authToken.split(" ")[1];
+
     jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decode) => {
       if (err) {
         return res.status(401).send({

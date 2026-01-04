@@ -8,9 +8,9 @@ const {
   updateTaskModel,
 } = require("../controllers/task");
 
-router.post("/tasks", createTaskModel);
-router.get("/tasks", displayTaskModel);
-router.delete("/tasks/:id", deleteTaskModel);
-router.put("/tasks/:id", updateTaskModel);
+router.post("/tasks", authMiddleware, createTaskModel);
+router.get("/tasks", authMiddleware, displayTaskModel);
+router.delete("/tasks/:id", authMiddleware, deleteTaskModel);
+router.put("/tasks/:id", authMiddleware, updateTaskModel);
 
 module.exports = router;
